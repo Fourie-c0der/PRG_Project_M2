@@ -1,8 +1,11 @@
 package studentwellnesssystem.utils;
 
+
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Properties;
 
 
 
@@ -13,6 +16,14 @@ public class DBConnection {
     private static final String PASSWORD = "app";
     Connection con;
 
+     public static Connection getConnection() throws SQLException {
+          Properties props = new Properties();
+        props.setProperty("user", USER);
+        props.setProperty("password", PASSWORD);
+        return DriverManager.getConnection(URL, props);
+    }
+    
+    
     public void connect() throws ClassNotFoundException{
         try{
             Class.forName(DRIVER);
