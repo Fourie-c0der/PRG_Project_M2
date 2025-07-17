@@ -4,14 +4,10 @@
  */
 package studentwellnesssystem.controller;
 
-import java.util.ArrayList;
-import studentwellnesssystem.utils.DBConnection;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import javax.swing.JOptionPane;
+import java.sql.*;
+import java.util.Vector;
 import javax.swing.table.DefaultTableModel;
+import studentwellnesssystem.utils.DBConnection;
 
 /**
  *
@@ -19,10 +15,11 @@ import javax.swing.table.DefaultTableModel;
  */
 public class AppointmentController {
    
-    
-    public void DisplayAPP(DefaultTableModel model){
-       
-     try (Connection conn = DBConnection.getConnection();
+     public static DefaultTableModel loadAppointments() {
+        String[] columns = {"ID", "Student Name", "Counselor Name", "Appointment Date", "Appointment Time", "Status"};
+        DefaultTableModel model = new DefaultTableModel(columns, 0);
+
+        try (Connection conn = DBConnection.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery("SELECT * FROM APPOINTMENTS")) {
 
@@ -38,9 +35,46 @@ public class AppointmentController {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error loading Appointments: " + e.getMessage());
+        }
+        return model;
+    }
+
+    public static void addAppointment(String student, String counselor, String date, String time, String status) throws SQLException {
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(
+                     "INSERT INTO APPOINTMENTS (STUDENTNAME, COUNSELORNAME, APPOINTMENTDATE, APPOINTMENTTIME, STATUS) VALUES (?, ?, ?, ?, ?)")) {
+            stmt.setString(1, student);
+            stmt.setString(2, counselor);
+            stmt.setString(3, date);
+            stmt.setString(4, time);
+            stmt.setString(5, status);
+            stmt.executeUpdate();
         }
     }
+    
+     public static void deleteAppointment(int id) throws SQLException {
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement("DELETE FROM APPOINTMENTS WHERE ID = ?")) {
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
+        }
+    }
+
+    public static void updateAppointment(int id, String student, String counselor, String date, String time, String status) throws SQLException {
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(
+                     "UPDATE APPOINTMENTS SET STUDENTNAME=?, COUNSELORNAME=?, APPOINTMENTDATE=?, APPOINTMENTTIME=?, STATUS=? WHERE ID=?")) {
+            stmt.setString(1, student);
+            stmt.setString(2, counselor);
+            stmt.setString(3, date);
+            stmt.setString(4, time);
+            stmt.setString(5, status);
+            stmt.setInt(6, id);
+            stmt.executeUpdate();
+        }
+    }
+
+    
     
     
 }
