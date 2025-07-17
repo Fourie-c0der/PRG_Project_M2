@@ -23,6 +23,8 @@ CREATE TABLE Feedback (
     studentName VARCHAR(100),
     rating INT,
     comments VARCHAR(255)
+     -- Constraint to ensure rating is within 1-5
+    CONSTRAINT chk_rating CHECK (rating >= 1 AND rating <= 5)
 );
 
 
